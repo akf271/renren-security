@@ -27,8 +27,8 @@ import io.renren.common.validator.group.UpdateGroup;
 import io.renren.modules.sys.entity.CmsUserEntity;
 import io.renren.modules.sys.service.CmsUserService;
 import io.renren.modules.sys.service.SysUserRoleService;
-import io.renren.modules.sys.service.SysUserService;
 import io.renren.modules.sys.shiro.ShiroUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +48,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/sys/user")
 public class SysUserController extends AbstractController {
-	@Autowired
-	private SysUserService sysUserService;
 	@Autowired
 	private CmsUserService cmsUserService;
 	@Autowired
@@ -128,9 +126,7 @@ public class SysUserController extends AbstractController {
 	@RequiresPermissions("sys:user:update")
 	public R update(@RequestBody CmsUserEntity user){
 		ValidatorUtils.validateEntity(user, UpdateGroup.class);
-
 		cmsUserService.update(user);
-		
 		return R.ok();
 	}
 	
@@ -141,16 +137,17 @@ public class SysUserController extends AbstractController {
 	@RequestMapping("/delete")
 	@RequiresPermissions("sys:user:delete")
 	public R delete(@RequestBody Long[] userIds){
-		if(ArrayUtils.contains(userIds, 1L)){
+		List<Long> userIdList = Arrays.asList(userIds);
+		List<CmsUserEntity> userList = cmsUserService.getSystemAdminUsers(userIdList);
+		if (!CollectionUtils.isEmpty(userList)){
 			return R.error("系统管理员不能删除");
 		}
-		
+
 		if(ArrayUtils.contains(userIds, getUserId())){
 			return R.error("当前用户不能删除");
 		}
+		cmsUserService.deleteBatchIds(Arrays.asList(userIds));
 
-		sysUserService.deleteBatchIds(Arrays.asList(userIds));
-		
 		return R.ok();
 	}
 }

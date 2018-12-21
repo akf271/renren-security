@@ -54,4 +54,11 @@ public interface CmsUserService extends IService<CmsUserEntity> {
      */
     boolean updatePassword(Long userId, String password, String newPassword);
 
+    /**
+     * 根据一组用户ID，查找是系统管理员的用户列表
+     * @param userIdList   用户ID集合
+     * @return
+     */
+    List<CmsUserEntity> getSystemAdminUsers(List<Long> userIdList);
+
 }

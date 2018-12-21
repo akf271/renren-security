@@ -25,13 +25,10 @@ import io.renren.common.utils.Constant;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.modules.sys.dao.CmsUserDAO;
-import io.renren.modules.sys.dao.SysUserDao;
 import io.renren.modules.sys.entity.CmsUserEntity;
 import io.renren.modules.sys.entity.SysDeptEntity;
-import io.renren.modules.sys.entity.SysUserEntity;
 import io.renren.modules.sys.service.*;
 import io.renren.modules.sys.shiro.ShiroUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,16 +95,16 @@ public class CmsUserServiceImpl extends ServiceImpl<CmsUserDAO, CmsUserEntity> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(CmsUserEntity user) {
-//        if(StringUtils.isBlank(user.getPassword())){
-//            user.setPassword(null);
-//        }else{
-//            SysUserEntity userEntity = this.selectById(user.getUserId());
-//            user.setPassword(ShiroUtils.sha256(user.getPassword(), userEntity.getSalt()));
-//        }
-//        this.updateById(user);
-//
-//        //保存用户与角色关系
-//        sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+
+        if(StringUtils.isBlank(user.getPassword())){
+            user.setPassword(null);
+        }else{
+            user.setPassword(ShiroUtils.doMd5(user.getPassword()));
+        }
+        this.updateById(user);
+
+        //保存用户与角色关系
+        sysUserRoleService.saveOrUpdate(user.getId(), user.getRoleIdList());
     }
 
 
@@ -119,4 +116,8 @@ public class CmsUserServiceImpl extends ServiceImpl<CmsUserDAO, CmsUserEntity> i
                 new EntityWrapper<CmsUserEntity>().eq("id", userId).eq("password", password));
     }
 
+    @Override
+    public List<CmsUserEntity> getSystemAdminUsers(List<Long> userIdList) {
+        return baseMapper.getSystemAdminUsers(userIdList);
+    }
 }

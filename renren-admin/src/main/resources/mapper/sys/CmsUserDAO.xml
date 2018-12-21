@@ -17,9 +17,21 @@
         <result column="is_system" jdbcType="INTEGER" property="isSystem" />
     </resultMap>
     <sql id="Base_Column_List">
-    id, login_name, `password`, `status`, dept_id, remark, update_time, create_time, nickname,
-    head_pic,is_system
-  </sql>
+        id, login_name, `password`, `status`, dept_id, remark, update_time, create_time, nickname,
+        head_pic,is_system
+    </sql>
+    <select id="getSystemAdminUsers" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from cms_user
+        <where>
+            id in
+            <foreach collection="userIdList" item="userId" index="index" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            and is_system = 1
+        </where>
+    </select>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
@@ -29,7 +41,7 @@
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from cms_user
     where id = #{id,jdbcType=BIGINT}
-  </delete>
+    </delete>
     <insert id="doInsert" parameterType="io.renren.modules.sys.entity.CmsUserEntity">
     insert into cms_user (id, login_name, `password`,
       `status`, remark, update_time,
@@ -39,7 +51,7 @@
       #{status,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
       #{createTime,jdbcType=TIMESTAMP}, #{nickname,jdbcType=VARCHAR}, #{headPic,jdbcType=VARCHAR}
       )
-  </insert>
+    </insert>
     <insert id="insertSelective" parameterType="io.renren.modules.sys.entity.CmsUserEntity">
         insert into cms_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
