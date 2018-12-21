@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.renren.common.validator.group.AddGroup;
 import io.renren.common.validator.group.UpdateGroup;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -65,6 +66,16 @@ public class CmsUserEntity implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 手机号
+     */
+    private String mobile;
+
+    /**
+     * 邮箱
+     */
+    private String email;
 
     /**
      * 更新时间
@@ -148,6 +159,23 @@ public class CmsUserEntity implements Serializable {
         this.remark = remark;
     }
 
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public LocalDateTime getUpdateTime() {
         return updateTime;
     }
@@ -207,6 +235,8 @@ public class CmsUserEntity implements Serializable {
                 ", deptName='" + deptName + '\'' +
                 ", roleIdList=" + roleIdList +
                 ", remark='" + remark + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", email='" + email + '\'' +
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 ", nickname='" + nickname + '\'' +

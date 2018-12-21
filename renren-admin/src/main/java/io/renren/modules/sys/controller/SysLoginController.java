@@ -22,11 +22,13 @@ import com.google.code.kaptcha.Producer;
 import io.renren.common.utils.Constant;
 import io.renren.common.utils.R;
 import io.renren.modules.sys.entity.CmsUserEntity;
+import io.renren.modules.sys.service.SysConfigService;
 import io.renren.modules.sys.shiro.ShiroUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,6 +50,9 @@ import java.io.IOException;
 public class SysLoginController {
 	@Autowired
 	private Producer producer;
+
+	@Autowired
+	private SysConfigService sysConfigService;
 	
 	@RequestMapping("captcha.jpg")
 	public void captcha(HttpServletResponse response)throws IOException {
@@ -82,7 +87,7 @@ public class SysLoginController {
 			subject.login(token);
 			CmsUserEntity user = ShiroUtils.getUserEntity();
 			if (user.getIsSystem() != Constant.IS_SYSTEM_FOR_SUPER) {
-				return R.error("您的账号权限不足！");
+				return R.error("账号权限不足！");
 			}
 		}catch (UnknownAccountException e) {
 			return R.error(e.getMessage());

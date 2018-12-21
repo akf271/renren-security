@@ -29,10 +29,7 @@ import io.renren.modules.sys.dao.SysUserDao;
 import io.renren.modules.sys.entity.CmsUserEntity;
 import io.renren.modules.sys.entity.SysDeptEntity;
 import io.renren.modules.sys.entity.SysUserEntity;
-import io.renren.modules.sys.service.CmsUserService;
-import io.renren.modules.sys.service.SysDeptService;
-import io.renren.modules.sys.service.SysUserRoleService;
-import io.renren.modules.sys.service.SysUserService;
+import io.renren.modules.sys.service.*;
 import io.renren.modules.sys.shiro.ShiroUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,9 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 /**
@@ -54,7 +50,10 @@ import java.util.Map;
  */
 @Service("cmsUserService")
 public class CmsUserServiceImpl extends ServiceImpl<CmsUserDAO, CmsUserEntity> implements CmsUserService {
-
+    @Autowired
+    private SysConfigService sysConfigService;
+    @Autowired
+    private SysUserRoleService sysUserRoleService;
     @Autowired
     private SysDeptService sysDeptService;
 
@@ -63,32 +62,37 @@ public class CmsUserServiceImpl extends ServiceImpl<CmsUserDAO, CmsUserEntity> i
     public PageUtils queryPage(Map<String, Object> params) {
         String username = (String)params.get("username");
 
+        List<String> orderByList = new ArrayList<>();
+        orderByList.add("id");
         Page<CmsUserEntity> page = this.selectPage(
                 new Query<CmsUserEntity>(params).getPage(),
                 new EntityWrapper<CmsUserEntity>()
                         .like(StringUtils.isNotBlank(username),"login_name", username)
-                        .addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER))
+                        .addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER)).orderDesc(orderByList)
         );
 
-//        for(CmsUserEntity cmsUserEntity : page.getRecords()){
-//            SysDeptEntity sysDeptEntity = sysDeptService.selectById(cmsUserEntity.getDeptId());
-//            cmsUserEntity.setDeptName(sysDeptEntity.getName());
-//        }
+        for(CmsUserEntity cmsUserEntity : page.getRecords()){
+            SysDeptEntity sysDeptEntity = sysDeptService.selectById(cmsUserEntity.getDeptId());
+            if (Objects.nonNull(sysDeptEntity)) {
+                cmsUserEntity.setDeptName(sysDeptEntity.getName());
+            }
+        }
 
         return new PageUtils(page);
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(CmsUserEntity user) {
-//        user.setCreateTime(new Date());
-//        //sha256加密
-//        String salt = RandomStringUtils.randomAlphanumeric(20);
-//        user.setSalt(salt);
-//        user.setPassword(ShiroUtils.sha256(user.getPassword(), user.getSalt()));
-//        this.insert(user);
-//
-//        //保存用户与角色关系
-//        sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+        LocalDateTime now = LocalDateTime.now();
+        user.setNickname(sysConfigService.getValue("defaultNickName"));
+        user.setHeadPic(sysConfigService.getValue("defaultHeadPic"));
+        user.setCreateTime(now);
+        user.setUpdateTime(now);
+        user.setPassword(ShiroUtils.doMd5(user.getPassword()));
+        this.insert(user);
+
+        //保存用户与角色关系
+        sysUserRoleService.saveOrUpdate(user.getId(), user.getRoleIdList());
     }
 
     @Override

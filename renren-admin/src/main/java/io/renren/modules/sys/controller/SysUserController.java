@@ -116,9 +116,7 @@ public class SysUserController extends AbstractController {
 	@RequiresPermissions("sys:user:save")
 	public R save(@RequestBody CmsUserEntity user){
 		ValidatorUtils.validateEntity(user, AddGroup.class);
-		
 		cmsUserService.save(user);
-		
 		return R.ok();
 	}
 	
