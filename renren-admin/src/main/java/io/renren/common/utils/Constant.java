@@ -30,6 +30,10 @@ public class Constant {
     /** 数据权限过滤 */
 	public static final String SQL_FILTER = "sql_filter";
 
+	public static final String DEFAULT_NICK_NAME = "粉象生活";
+
+	public static final String DEFAULT_HEAD_PIC = "http://static.fenxianglife.com/other/head_pic.png";
+
 
 	/**
 	 * 菜单类型

@@ -81,8 +81,8 @@ public class CmsUserServiceImpl extends ServiceImpl<CmsUserDAO, CmsUserEntity> i
     @Transactional(rollbackFor = Exception.class)
     public void save(CmsUserEntity user) {
         LocalDateTime now = LocalDateTime.now();
-        user.setNickname(sysConfigService.getValue("defaultNickName"));
-        user.setHeadPic(sysConfigService.getValue("defaultHeadPic"));
+        user.setNickname(Constant.DEFAULT_NICK_NAME);
+        user.setHeadPic(Constant.DEFAULT_HEAD_PIC);
         user.setCreateTime(now);
         user.setUpdateTime(now);
         user.setPassword(ShiroUtils.doMd5(user.getPassword()));
