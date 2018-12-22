@@ -51,16 +51,6 @@ public class SysMenuController extends AbstractController {
 	@Autowired
 	private CmsUserService cmsUserService;
 
-
-//	/**
-//	 * 导航菜单
-//	 */
-//	@RequestMapping("/nav")
-//	public R nav(){
-//		List<SysMenuEntity> menuList = sysMenuService.getUserMenuList(getUserId());
-//		return R.ok().put("menuList", menuList);
-//	}
-
 	/**
 	 * 导航菜单
 	 */
