@@ -96,9 +96,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 	 */
 	private List<SysMenuEntity> getAllMenuList(List<Long> menuIdList){
 		//查询根菜单列表
+		//获取用户有权限的所有顶级目录、菜单
 		List<SysMenuEntity> menuList = queryListParentId(0L, menuIdList);
 		//递归获取子菜单
-		getMenuTreeList(menuList, menuIdList);
+		getMenuTreeList(menuList, menuIdList); //menuList：顶级目录、菜单 | menuIdList：用户所有有权限的菜单ID
 		
 		return menuList;
 	}
@@ -108,7 +109,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 	 */
 	private List<SysMenuEntity> getMenuTreeList(List<SysMenuEntity> menuList, List<Long> menuIdList){
 		List<SysMenuEntity> subMenuList = new ArrayList<SysMenuEntity>();
-		
+
 		for(SysMenuEntity entity : menuList){
 			//目录
 			if(entity.getType() == Constant.MenuType.CATALOG.getValue()){
@@ -116,7 +117,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 			}
 			subMenuList.add(entity);
 		}
-		
 		return subMenuList;
 	}
+
 }

@@ -17,7 +17,7 @@
         <result column="is_system" jdbcType="INTEGER" property="isSystem" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, login_name, `password`, `status`, dept_id, remark, update_time, create_time, nickname,
+        id, login_name, `password`, `status`, dept_id, remark, mobile, email, update_time, create_time, nickname,
         head_pic,is_system
     </sql>
     <select id="getSystemAdminUsers" parameterType="java.lang.Long" resultMap="BaseResultMap">
